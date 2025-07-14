@@ -17,3 +17,38 @@ See Documentation/00-INDEX for a list of what is contained in each file.
 Please read the Documentation/process/changes.rst file, as it contains the
 requirements for building and running the kernel, and information about
 the problems which may result by upgrading your kernel.
+
+
+
+**** DEVICE README FILE ****
+
+1. Android build
+  - Download original android source code ( android-12.0.0_r11 ) from http://source.android.com   
+  ( $repo init -u https://android.googlesource.com/platform/manifest -b android-12.0.0_r11
+    $repo sync -cdq -j12 --no-tags
+    $repo start android-12.0.0_r11 --all 
+  )
+  - And, merge the source into the android source code
+  
+  - Run following scripts to build android
+    a) source build/envsetup.sh
+    b) lunch 1
+    c) make -j4
+  - When you compile the android source code, you have to add google original prebuilt source(toolchain) into the android directory.
+  - After build, you can find output at out/target/product/generic
+
+2. Kernel Build  
+  - Uncompress using following command at the android directory
+    a) tar -xvzf *_Kernel_S.tar.gz 
+  - When you compile the kernel source code, you have to add google original "prebuilt" source(toolchain) into the android directory.
+  - Run following scripts to build kernel
+
+   a)cd android	 
+   b)make -C kernel-4.19 O=../out ARCH=arm CC=../prebuilts/clang/host/linux-x86/clang-r383902/bin/clang CLANG_TRIPLE=arm-linux-gnueabi- CROSS_COMPILE=../prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androidkernel- LGE_TARGET_PLATFORM=mt6765 LGE_TARGET_DEVICE=meh15lm LGE_LAMP_DEVICE=yes MTK_DTBO_FEATURE=yes PLATFORM_DTB_NAME=mt6762 PROJECT_DTB_NAMES=muse6762_eh15_s muse6762_eh15_s_debug_defconfig 
+   c)make -C kernel-4.19 O=../out ARCH=arm CC=../prebuilts/clang/host/linux-x86/clang-r383902/bin/clang CLANG_TRIPLE=arm-linux-gnueabi- CROSS_COMPILE=../prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androidkernel- LGE_TARGET_PLATFORM=mt6765 LGE_TARGET_DEVICE=meh15lm LGE_LAMP_DEVICE=yes MTK_DTBO_FEATURE=yes PLATFORM_DTB_NAME=mt6762 PROJECT_DTB_NAMES=muse6762_eh15_s headers_install
+   d)make -j16 -C kernel-4.19 O=../out ARCH=arm CC=../prebuilts/clang/host/linux-x86/clang-r383902/bin/clang CLANG_TRIPLE=arm-linux-gnueabi- CROSS_COMPILE=../prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androidkernel- LGE_TARGET_PLATFORM=mt6765 LGE_TARGET_DEVICE=meh15lm LGE_LAMP_DEVICE=yes MTK_DTBO_FEATURE=yes PLATFORM_DTB_NAME=mt6762 PROJECT_DTB_NAMES=muse6762_eh15_s
+
+* "-j16" : The number, 16, is the number of multiple jobs to be invoked simultaneously. 
+- After build, you can find the build image(Image.gz) at out/arch/arm/boot.
+
+
